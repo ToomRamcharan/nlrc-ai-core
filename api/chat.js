@@ -155,88 +155,82 @@ export default async function handler(req) {
       }
     }
 
-    // Primary 8B Reasoning Model Live Endpoint (Google Cloud GPU VM)
+    // Dedicated Endpoint for Our Actual Trained 8B Model (Google Cloud GPU)
     const NLRC_8B_ENDPOINT = process.env.NLRC_8B_ENDPOINT || 'https://products-most-plastics-nick.trycloudflare.com/v1/chat/completions';
 
-    // Endpoint Selection: Dedicated 30B Vision router for images, 8B Reasoning Model for text (24/7 Unlimited)
-    const endpointsToTry = hasImage ? [
-      {
-        url: 'https://router.huggingface.co/featherless-ai/v1/chat/completions',
-        model: 'Qwen/Qwen3-VL-30B-A3B-Instruct',
-        timeoutMs: 15000
-      },
-      {
-        url: 'https://router.huggingface.co/featherless-ai/v1/chat/completions',
-        model: 'Qwen/Qwen2.5-VL-72B-Instruct',
-        timeoutMs: 15000
-      }
-    ] : [
-      {
-        // 1. Direct GPU server on Colab VM (if active)
-        url: NLRC_8B_ENDPOINT,
-        model: 'NLRC-AI-Reasoning-8B',
-        timeoutMs: 4000
-      },
-      {
-        // 2. 24/7 Unlimited 8B Hugging Face Router (NScale)
-        url: 'https://router.huggingface.co/nscale/v1/chat/completions',
-        model: 'meta-llama/Llama-3.1-8B-Instruct',
-        timeoutMs: 15000
-      },
-      {
-        // 3. 24/7 Unlimited 8B Hugging Face Router (Featherless)
-        url: 'https://router.huggingface.co/featherless-ai/v1/chat/completions',
-        model: 'meta-llama/Llama-3.1-8B-Instruct',
-        timeoutMs: 15000
-      },
-      {
-        // 4. 24/7 High-throughput fallback
-        url: 'https://router.huggingface.co/nscale/v1/chat/completions',
-        model: 'Qwen/Qwen2.5-Coder-7B-Instruct',
-        timeoutMs: 15000
-      }
-    ];
+    if (hasImage) {
+      // Vision queries use the dedicated multimodal vision engine
+      const visionRes = await fetch('https://router.huggingface.co/featherless-ai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'Qwen/Qwen3-VL-30B-A3B-Instruct',
+          messages: payloadMessages,
+          max_tokens,
+          stream: true,
+        }),
+      });
 
-    for (const ep of endpointsToTry) {
-      try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), ep.timeoutMs || 15000);
-
-        const hfRes = await fetch(ep.url, {
-          method: 'POST',
+      if (visionRes.ok) {
+        return new Response(visionRes.body, {
+          status: 200,
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache, no-transform',
+            'Connection': 'keep-alive',
+            'Access-Control-Allow-Origin': '*',
+            'X-NLRC-Model': 'NLRC-AI-Vision-30B',
           },
-          body: JSON.stringify({
-            model: ep.model,
-            messages: payloadMessages,
-            max_tokens,
-            stream: true,
-          }),
-          signal: controller.signal,
         });
-        clearTimeout(timeoutId);
-
-        if (hfRes.ok) {
-          // Stream Server-Sent Events (SSE) back to client
-          return new Response(hfRes.body, {
-            status: 200,
-            headers: {
-              'Content-Type': 'text/event-stream',
-              'Cache-Control': 'no-cache, no-transform',
-              'Connection': 'keep-alive',
-              'Access-Control-Allow-Origin': '*',
-              'X-NLRC-Model': 'NLRC-AI-Reasoning-8B',
-            },
-          });
-        } else {
-          const errText = await hfRes.text();
-          console.warn(`Endpoint ${ep.url} [${ep.model}] status ${hfRes.status}:`, errText.slice(0, 150));
-        }
-      } catch (err) {
-        console.warn(`Endpoint ${ep.url} exception:`, err);
       }
+    }
+
+    // Text queries route EXCLUSIVELY to our actual trained 8B model weights
+    try {
+      const hfRes = await fetch(NLRC_8B_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'NLRC-AI-Reasoning-8B',
+          messages: payloadMessages,
+          max_tokens,
+          stream: true,
+        }),
+      });
+
+      if (hfRes.ok) {
+        return new Response(hfRes.body, {
+          status: 200,
+          headers: {
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache, no-transform',
+            'Connection': 'keep-alive',
+            'Access-Control-Allow-Origin': '*',
+            'X-NLRC-Model': 'NLRC-AI-Reasoning-8B (Trained Weights)',
+          },
+        });
+      } else {
+        const errText = await hfRes.text();
+        return new Response(JSON.stringify({ 
+          error: 'NLRC AI 8B GPU server returned an error: ' + errText 
+        }), {
+          status: 502,
+          headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+        });
+      }
+    } catch (err) {
+      return new Response(JSON.stringify({ 
+        error: 'Your trained NLRC AI 8B GPU server is currently offline or unreachable. Please launch the GPU server on Colab to connect your weights.',
+        details: err.message
+      }), {
+        status: 503,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      });
     }
 
     return new Response(JSON.stringify({ error: 'All Hugging Face GPU endpoints are currently unavailable.' }), {
