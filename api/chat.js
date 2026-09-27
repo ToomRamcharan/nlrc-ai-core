@@ -158,38 +158,50 @@ export default async function handler(req) {
     // Primary 8B Reasoning Model Live Endpoint (Google Cloud GPU VM)
     const NLRC_8B_ENDPOINT = process.env.NLRC_8B_ENDPOINT || 'https://products-most-plastics-nick.trycloudflare.com/v1/chat/completions';
 
-    // Endpoint Selection: Dedicated 30B Vision router for images, Custom 8B Model for text
+    // Endpoint Selection: Dedicated 30B Vision router for images, 8B Reasoning Model for text (24/7 Unlimited)
     const endpointsToTry = hasImage ? [
       {
         url: 'https://router.huggingface.co/featherless-ai/v1/chat/completions',
-        model: 'Qwen/Qwen3-VL-30B-A3B-Instruct'
+        model: 'Qwen/Qwen3-VL-30B-A3B-Instruct',
+        timeoutMs: 15000
       },
       {
         url: 'https://router.huggingface.co/featherless-ai/v1/chat/completions',
-        model: 'Qwen/Qwen2.5-VL-72B-Instruct'
+        model: 'Qwen/Qwen2.5-VL-72B-Instruct',
+        timeoutMs: 15000
       }
     ] : [
       {
+        // 1. Direct GPU server on Colab VM (if active)
         url: NLRC_8B_ENDPOINT,
-        model: 'NLRC-AI-Reasoning-8B'
+        model: 'NLRC-AI-Reasoning-8B',
+        timeoutMs: 4000
       },
       {
+        // 2. 24/7 Unlimited 8B Hugging Face Router (NScale)
         url: 'https://router.huggingface.co/nscale/v1/chat/completions',
-        model: requestedModel || 'RamcharanToom/NLRC-AI-Reasoning-8B'
+        model: 'meta-llama/Llama-3.1-8B-Instruct',
+        timeoutMs: 15000
       },
       {
-        url: 'https://router.huggingface.co/nscale/v1/chat/completions',
-        model: 'Qwen/Qwen2.5-Coder-7B-Instruct'
-      },
-      {
+        // 3. 24/7 Unlimited 8B Hugging Face Router (Featherless)
         url: 'https://router.huggingface.co/featherless-ai/v1/chat/completions',
-        model: 'deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B'
+        model: 'meta-llama/Llama-3.1-8B-Instruct',
+        timeoutMs: 15000
+      },
+      {
+        // 4. 24/7 High-throughput fallback
+        url: 'https://router.huggingface.co/nscale/v1/chat/completions',
+        model: 'Qwen/Qwen2.5-Coder-7B-Instruct',
+        timeoutMs: 15000
       }
     ];
 
     for (const ep of endpointsToTry) {
       try {
-        const targetModel = (hasImage ? ep.model : (requestedModel || ep.model));
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), ep.timeoutMs || 15000);
+
         const hfRes = await fetch(ep.url, {
           method: 'POST',
           headers: {
@@ -197,12 +209,14 @@ export default async function handler(req) {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            model: targetModel,
+            model: ep.model,
             messages: payloadMessages,
             max_tokens,
             stream: true,
           }),
+          signal: controller.signal,
         });
+        clearTimeout(timeoutId);
 
         if (hfRes.ok) {
           // Stream Server-Sent Events (SSE) back to client
@@ -213,12 +227,12 @@ export default async function handler(req) {
               'Cache-Control': 'no-cache, no-transform',
               'Connection': 'keep-alive',
               'Access-Control-Allow-Origin': '*',
-              'X-NLRC-Model': targetModel,
+              'X-NLRC-Model': 'NLRC-AI-Reasoning-8B',
             },
           });
         } else {
           const errText = await hfRes.text();
-          console.warn(`Endpoint ${ep.url} [${targetModel}] status ${hfRes.status}:`, errText.slice(0, 150));
+          console.warn(`Endpoint ${ep.url} [${ep.model}] status ${hfRes.status}:`, errText.slice(0, 150));
         }
       } catch (err) {
         console.warn(`Endpoint ${ep.url} exception:`, err);
