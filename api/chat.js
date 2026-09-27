@@ -155,7 +155,10 @@ export default async function handler(req) {
       }
     }
 
-    // Endpoint Selection: Dedicated 30B Vision router for images, Custom Reasoning Model for text
+    // Primary 8B Reasoning Model Live Endpoint (Google Cloud GPU VM)
+    const NLRC_8B_ENDPOINT = process.env.NLRC_8B_ENDPOINT || 'https://products-most-plastics-nick.trycloudflare.com/v1/chat/completions';
+
+    // Endpoint Selection: Dedicated 30B Vision router for images, Custom 8B Model for text
     const endpointsToTry = hasImage ? [
       {
         url: 'https://router.huggingface.co/featherless-ai/v1/chat/completions',
@@ -166,6 +169,10 @@ export default async function handler(req) {
         model: 'Qwen/Qwen2.5-VL-72B-Instruct'
       }
     ] : [
+      {
+        url: NLRC_8B_ENDPOINT,
+        model: 'NLRC-AI-Reasoning-8B'
+      },
       {
         url: 'https://router.huggingface.co/nscale/v1/chat/completions',
         model: requestedModel || 'RamcharanToom/NLRC-AI-Reasoning-8B'
