@@ -1,8 +1,0 @@
-torch>=2.2.0
-torchvision>=0.17.0
-gradio>=4.20.0
-duckduckgo-search>=5.3.0
-pillow>=10.2.0
-datasets>=2.18.0
-einops>=0.7.0
-requests>=2.31.0
