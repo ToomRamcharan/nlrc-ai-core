@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>NLRC AI — Chat & Neural Reasoning</title>
+  <meta name="description" content="Chat with NLRC AI — Frontier reasoning intelligence powered by custom GRPO neural logic.">
+  
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  
+  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
+  <link rel="stylesheet" href="css/chat.css?v=2.2">
+  <link rel="stylesheet" href="css/auth.css?v=2.2">
+
+  <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+
+  <style>
+    /* Reasoning collapsible think drawer */
+    .think-drawer {
+      margin-bottom: 16px;
+      border: 1px solid rgba(155, 138, 255, 0.25);
+      border-radius: 12px;
+      background: rgba(110, 86, 207, 0.05);
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+    .think-drawer summary {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #bfaaff;
+      cursor: pointer;
+      user-select: none;
+      outline: none;
+      list-style: none;
+    }
+    .think-drawer summary::-webkit-details-marker { display: none; }
+    .think-drawer summary .think-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #9b8aff;
+      box-shadow: 0 0 10px #9b8aff;
+      animation: oxPulse 1.6s infinite;
+    }
+    .think-drawer summary svg.think-arrow {
+      margin-left: auto;
+      width: 14px;
+      height: 14px;
+      transition: transform 0.2s ease;
+    }
+    .think-drawer[open] summary svg.think-arrow {
+      transform: rotate(180deg);
+    }
+    .think-body {
+      padding: 4px 14px 14px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: rgba(245, 245, 247, 0.65);
+      font-style: italic;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      white-space: pre-wrap;
+    }
+    [data-theme="light"] .think-drawer {
+      background: rgba(110, 86, 207, 0.08);
+      border-color: rgba(110, 86, 207, 0.2);
+    }
+    [data-theme="light"] .think-drawer summary {
+      color: #6e56cf;
+    }
+    [data-theme="light"] .think-body {
+      color: var(--text-secondary);
+      border-top-color: var(--border);
+    }
+    /* Web search context pill */
+    .search-pill-source {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 980px;
+      background: rgba(6, 182, 212, 0.12);
+      border: 1px solid rgba(6, 182, 212, 0.25);
+      font-size: 11.5px;
+      color: #67e8f9;
+      margin: 4px 6px 4px 0;
+      text-decoration: none;
+    }
+    .search-pill-source:hover {
+      background: rgba(6, 182, 212, 0.22);
+    }
+    /* Web toggle button in composer */
+    .web-toggle-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+      flex-shrink: 0;
+      border: none;
+      background: transparent;
+    }
+    .web-toggle-btn.active {
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.12);
+    }
+    .web-toggle-btn:hover {
+      color: var(--text-primary);
+      background: var(--surface-hover);
+    }
+  </style>
+</head>
+<body>
+  <div class="app" id="appRoot">
+
+    <!-- Mobile Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar(false)"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-header-top">
+          <a href="index.html" class="sidebar-logo">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9b8aff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="18 15 12 9 6 15"></polyline>
+            </svg>
+            <span class="sidebar-logo-text">NLRC AI</span>
+          </a>
+          <button class="sidebar-collapse-btn" onclick="toggleSidebarCollapse()" aria-label="Toggle sidebar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+          </button>
+        </div>
+
+        <button class="new-chat-btn" onclick="createNewChat()">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          <span class="new-chat-label">New Chat</span>
+        </button>
+      </div>
+
+      <div class="sidebar-chats" id="chatListContainer">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <div class="sidebar-bottom">
+        <button class="settings-trigger" onclick="openSettingsModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          <span class="settings-label">Settings</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Chat Workspace -->
+    <main class="chat-area">
+      <!-- Mobile Top Bar with Burger Button -->
+      <div class="top-bar">
+        <button class="mobile-burger" onclick="toggleSidebar(true)" aria-label="Open menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+        <a href="index.html" style="font-weight:600; display:flex; align-items:center; gap:6px; color:#fff;">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#9b8aff" stroke-width="2.5"><polyline points="18 15 12 9 6 15"></polyline></svg>
+          NLRC AI
+        </a>
+      </div>
+
+      <!-- Messages Stream -->
+      <div class="messages-wrap" id="messagesWrap">
+        
+        <!-- Empty State Hero -->
+        <div class="empty-state" id="emptyState">
+          <div class="empty-inner">
+            <h1 class="empty-title">What can I help you with?</h1>
+            <div class="empty-input-box" id="emptyComposerBox">
+              <!-- File Attachment Button -->
+              <label class="ox-attach" title="Attach image or file">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                </svg>
+                <input type="file" id="emptyFileUploadInput" accept="image/*,text/*,.pdf" onchange="handleFileSelect(event)">
+              </label>
+
+              <!-- Web Search Toggle Button -->
+              <button type="button" class="web-toggle-btn" id="emptyWebSearchToggle" onclick="toggleWebSearch()" title="Toggle Web Research">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="2" y1="12" x2="22" y2="12"></line>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                </svg>
+              </button>
+
+              <!-- Active Text Input -->
+              <textarea id="emptyComposerTextarea" placeholder="Refactor this 2,000-line module without changing its behavior..." rows="1" oninput="autoResizeTextarea(this); syncEmptySendBtn(this)" onkeydown="handleEmptyKey(event)"></textarea>
+
+              <!-- Send Button -->
+              <button class="send-btn" id="emptySendBtn" onclick="sendFromEmpty()" disabled aria-label="Send message">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat Conversation Messages List -->
+        <div class="messages-col" id="messagesCol" style="display:none;"></div>
+      </div>
+
+      <!-- Pinned Composer (Bottom Input Area) - Only shown during active conversation -->
+      <div class="input-area" id="composerArea" style="display:none;">
+        <div class="input-col">
+          <!-- Attachment Chip Strip -->
+          <div id="attachStrip" style="display:none; padding:4px 0 8px; gap:8px;"></div>
+
+          <div class="input-box" id="composerBox">
+            <!-- File Attachment Button -->
+            <label class="ox-attach" title="Attach image or file">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+              </svg>
+              <input type="file" id="fileUploadInput" accept="image/*,text/*,.pdf" onchange="handleFileSelect(event)">
+            </label>
+
+            <!-- Web Search Toggle Button -->
+            <button type="button" class="web-toggle-btn" id="webSearchToggle" onclick="toggleWebSearch()" title="Toggle Web Research">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
+            </button>
+
+            <!-- Text Input -->
+            <textarea id="composerTextarea" placeholder="Send a message..." rows="1" oninput="autoResizeTextarea(this)" onkeydown="handleTextareaKeyDown(event)"></textarea>
+
+            <!-- Action Button (Send or Stop) -->
+            <button class="send-btn" id="composerSendBtn" onclick="sendMessage()" disabled aria-label="Send message">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+            </button>
+            <button class="stop-btn" id="composerStopBtn" style="display:none;" onclick="stopGeneration()" aria-label="Stop generating">
+              <svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"></rect></svg>
+            </button>
+          </div>
+
+          <div class="input-disclaimer">
+            NLRC AI can make mistakes. Verify important information.
+          </div>
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="settings-overlay" id="settingsOverlay" onclick="if(event.target===this) closeSettingsModal()">
+    <div class="settings-modal">
+      <div class="settings-modal-header">
+        <h3>Settings</h3>
+        <button class="settings-modal-close" onclick="closeSettingsModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="settings-modal-body">
+        <!-- Account Item -->
+        <div class="settings-item">
+          <div class="settings-item-left">
+            <div class="settings-item-icon" style="background:linear-gradient(135deg,#7c66e6,#5b46c9); color:#fff; font-weight:700; font-size:12px;" id="modalAvatar">G</div>
+            <div>
+              <div class="settings-item-label" id="modalUserName">Guest User</div>
+              <div class="settings-item-desc" id="modalUserTier">Click to sign in and sync chats</div>
+            </div>
+          </div>
+          <button class="ox-btn" id="modalAuthBtn" onclick="closeSettingsModal(); openAuthModal();" style="padding:6px 14px; font-size:12px; border-radius:980px; background:rgba(255,255,255,0.08); color:#fff; border:1px solid rgba(255,255,255,0.15);">Sign In</button>
+        </div>
+
+        <div class="settings-item">
+          <div class="settings-item-left">
+            <div class="settings-item-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            </div>
+            <div>
+              <div class="settings-item-label">Appearance</div>
+              <div class="settings-item-desc">Choose system theme</div>
+            </div>
+          </div>
+          <div class="theme-pills">
+            <button class="theme-pill active" id="themeDarkBtn" onclick="setTheme('dark')">Dark</button>
+            <button class="theme-pill" id="themeLightBtn" onclick="setTheme('light')">Light</button>
+          </div>
+        </div>
+
+        <div class="settings-item">
+          <div class="settings-item-left">
+            <div class="settings-item-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+            </div>
+            <div>
+              <div class="settings-item-label">Language</div>
+              <div class="settings-item-desc">Preferred output language</div>
+            </div>
+          </div>
+          <select class="settings-lang-select" id="langSelect">
+            <option value="en">English</option>
+            <option value="es">Español</option>
+            <option value="fr">Français</option>
+            <option value="de">Deutsch</option>
+            <option value="zh">中文</option>
+            <option value="hi">हिन्दी</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="settings-modal-footer">
+        <button class="clear-btn" onclick="clearAllChats()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          Clear all chats
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Authentication Modal -->
+  <div class="auth-overlay" id="authOverlay" onclick="if(event.target===this) closeAuthModal()">
+    <div class="auth-modal">
+      <button class="auth-close" onclick="closeAuthModal()" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+
+      <div class="auth-header">
+        <div class="auth-logo-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+          </svg>
+        </div>
+        <h2 class="auth-title" id="authModalTitle">Welcome to NLRC AI</h2>
+        <p class="auth-subtitle" id="authModalSubtitle">Sign in to save your chats and sync across devices</p>
+      </div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabSignIn" onclick="switchAuthTab('signin')">Sign In</button>
+        <button class="auth-tab" id="tabSignUp" onclick="switchAuthTab('signup')">Create Account</button>
+      </div>
+
+      <form class="auth-form" id="authForm" onsubmit="handleAuthSubmit(event)">
+        <div class="auth-input-group" id="nameGroup" style="display:none;">
+          <label class="auth-label">Full Name</label>
+          <input type="text" class="auth-input" id="authName" placeholder="Enter your name">
+        </div>
+
+        <div class="auth-input-group">
+          <label class="auth-label">Email Address</label>
+          <input type="email" class="auth-input" id="authEmail" placeholder="you@domain.com" required>
+        </div>
+
+        <div class="auth-input-group">
+          <label class="auth-label">Password</label>
+          <input type="password" class="auth-input" id="authPassword" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" class="auth-submit-btn" id="authSubmitBtn">Sign In</button>
+      </form>
+
+      <div class="auth-divider">or</div>
+
+      <button type="button" class="auth-guest-btn" onclick="continueAsGuest()">
+        Continue as Guest
+      </button>
+    </div>
+  </div>
+
+  <!-- APPLICATION LOGIC & HUGGING FACE BACKEND INTEGRATION -->
+  <script>
+    // Hugging Face Backend Configuration
+    const _t = '';
+    const HF_ENDPOINTS = [
+      {
+        url: 'https://router.huggingface.co/nscale/v1/chat/completions',
+        model: 'RamcharanToom/NLRC-AI-Reasoning-8B'
+      },
+      {
+        url: 'https://router.huggingface.co/nscale/v1/chat/completions',
+        model: 'Qwen/Qwen2.5-Coder-7B-Instruct'
+      },
+      {
+        url: 'https://router.huggingface.co/featherless-ai/v1/chat/completions',
+        model: 'deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B'
+      }
+    ];
+
+    const SYSTEM_INSTRUCTION = 
+      "You are NLRC AI, an advanced reasoning assistant developed with custom GRPO neural logic.\n" +
+      "Your name is strictly NLRC AI. Never identify as Qwen, DeepSeek, or any other base model.\n\n" +
+      "Reasoning Guidelines:\n" +
+      "- In <think>...</think> tags, plan your approach, verify facts, calculate intermediate steps, and test edge cases. Conclude with </think>.\n\n" +
+      "Final Answer Guidelines (MANDATORY):\n" +
+      "- After </think>, you MUST deliver an exhaustive, highly detailed, and complete explanation.\n" +
+      "- NEVER give a 1-2 sentence summary. The final answer must contain:\n" +
+      "  1. Detailed step-by-step analysis and mathematical/logical proofs.\n" +
+      "  2. Clear Markdown headings (###), bullet points, and comparative tables where helpful.\n" +
+      "  3. Complete code implementations with thorough explanations and complexity analysis (if technical).\n" +
+      "  4. Rich contextual explanations so the user understands the *why* and *how*, not just the result.";
+
+    // Application State
+    let chats = [];
+    let currentChatId = null;
+    let isGenerating = false;
+    let abortController = null;
+    let webSearchActive = false;
+    let pendingAttachment = null; // { name, b64, type }
+
+    // Init Marked & KaTeX
+    marked.setOptions({
+      highlight: function(code, lang) {
+        if (lang && hljs.getLanguage(lang)) {
+          return hljs.highlight(code, { language: lang }).value;
+        }
+        return hljs.highlightAuto(code).value;
+      },
+      breaks: true
+    });
+
+    // Load Local Storage
+    function loadSavedChats() {
+      const data = localStorage.getItem('nlrc_chats');
+      if (data) {
+        try { 
+          chats = JSON.parse(data);
+          // Purge empty ghost chats from previous session bug
+          chats = chats.filter(c => c && c.messages && c.messages.length > 0);
+        } catch (e) { 
+          chats = []; 
+        }
+      }
+      renderChatList();
+    }
+
+    function saveChats() {
+      const valid = chats.filter(c => c && c.messages && c.messages.length > 0);
+      localStorage.setItem('nlrc_chats', JSON.stringify(valid));
+      renderChatList();
+    }
+
+    function renderChatList() {
+      const container = document.getElementById('chatListContainer');
+      container.innerHTML = '';
+
+      const validChats = chats.filter(c => c && c.messages && c.messages.length > 0);
+      if (validChats.length === 0) return;
+
+      const now = Date.now();
+      const oneDay = 24 * 60 * 60 * 1000;
+      const todayChats = validChats.filter(c => (now - (c.created_at || now)) < oneDay);
+      const olderChats = validChats.filter(c => (now - (c.created_at || now)) >= oneDay);
+
+      function renderGroup(title, groupList) {
+        if (groupList.length === 0) return;
+        const groupEl = document.createElement('div');
+        groupEl.innerHTML = `<div class="chat-group-label">${title}</div>`;
+        groupList.forEach(chat => {
+          const item = document.createElement('div');
+          item.className = 'chat-item' + (chat.id === currentChatId ? ' active' : '');
+          item.onclick = (e) => {
+            if (e.target.closest('.chat-item-delete')) return;
+            selectChat(chat.id);
+          };
+          item.innerHTML = `
+            <div class="chat-item-title">${escapeHtml(chat.title || 'Chat')}</div>
+            <button class="chat-item-delete" onclick="deleteChat('${chat.id}')" title="Delete">✕</button>
+          `;
+          groupEl.appendChild(item);
+        });
+        container.appendChild(groupEl);
+      }
+
+      renderGroup('TODAY', todayChats);
+      renderGroup('OLDER', olderChats);
+    }
+
+    function createNewChat() {
+      currentChatId = null;
+      clearAttachment();
+      renderChatList();
+
+      const emptyState = document.getElementById('emptyState');
+      const messagesCol = document.getElementById('messagesCol');
+      const composerArea = document.getElementById('composerArea');
+
+      if (emptyState) emptyState.style.display = 'flex';
+      if (messagesCol) {
+        messagesCol.style.display = 'none';
+        messagesCol.innerHTML = '';
+      }
+      if (composerArea) composerArea.style.display = 'none';
+
+      const emptyTa = document.getElementById('emptyComposerTextarea');
+      if (emptyTa) {
+        emptyTa.value = '';
+        emptyTa.style.height = 'auto';
+        document.getElementById('emptySendBtn').disabled = true;
+        setTimeout(() => emptyTa.focus(), 60);
+      }
+    }
+
+    function selectChat(id) {
+      currentChatId = id;
+      const chat = chats.find(c => c.id === id);
+      renderChatList();
+
+      if (chat && chat.messages && chat.messages.length > 0) {
+        renderMessages(chat.messages);
+      } else {
+        createNewChat();
+      }
+    }
+
+    function deleteChat(id) {
+      chats = chats.filter(c => c.id !== id);
+      saveChats();
+      if (currentChatId === id) {
+        if (chats.length > 0) {
+          selectChat(chats[0].id);
+        } else {
+          createNewChat();
+        }
+      }
+    }
+
+    function clearAllChats() {
+      if (confirm('Are you sure you want to clear all chat history?')) {
+        chats = [];
+        saveChats();
+        createNewChat();
+        closeSettingsModal();
+      }
+    }
+
+    function sendFromEmpty() {
+      const emptyTa = document.getElementById('emptyComposerTextarea');
+      const text = emptyTa.value.trim();
+      if (!text && !pendingAttachment) return;
+
+      const mainTa = document.getElementById('composerTextarea');
+      mainTa.value = text;
+      emptyTa.value = '';
+      emptyTa.style.height = 'auto';
+      document.getElementById('emptySendBtn').disabled = true;
+
+      sendMessage();
+    }
+
+    function handleEmptyKey(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendFromEmpty();
+      }
+    }
+
+    function syncEmptySendBtn(ta) {
+      const btn = document.getElementById('emptySendBtn');
+      if (btn) btn.disabled = !ta.value.trim() && !pendingAttachment;
+    }
+
+    // Render Messages Stream
+    function renderMessages(messages) {
+      const col = document.getElementById('messagesCol');
+      const empty = document.getElementById('emptyState');
+      const composerArea = document.getElementById('composerArea');
+
+      if (!messages || messages.length === 0) {
+        if (empty) empty.style.display = 'flex';
+        if (col) {
+          col.style.display = 'none';
+          col.innerHTML = '';
+        }
+        if (composerArea) composerArea.style.display = 'none';
+        return;
+      }
+
+      if (empty) empty.style.display = 'none';
+      if (col) {
+        col.style.display = 'flex';
+        col.innerHTML = '';
+      }
+      if (composerArea) composerArea.style.display = 'block';
+
+      messages.forEach(msg => {
+        const msgEl = createMessageElement(msg);
+        col.appendChild(msgEl);
+      });
+
+      scrollToBottom();
+    }
+
+    function createMessageElement(msg) {
+      const el = document.createElement('div');
+      el.className = 'msg ' + (msg.role === 'user' ? 'msg-user' : 'msg-assistant') + (msg.isStreaming ? ' streaming' : '');
+
+      if (msg.role === 'user') {
+        let imgsHtml = '';
+        if (msg.image) {
+          imgsHtml = `<div class="ox-imgs"><img src="${msg.image}" alt="attachment"></div>`;
+        }
+        el.innerHTML = `
+          ${imgsHtml}
+          <div class="msg-bubble">${escapeHtml(msg.content)}</div>
+        `;
+      } else {
+        // Assistant Message with Reasoning Accordion & Actions
+        let thinkHtml = '';
+        if (msg.reasoning) {
+          thinkHtml = `
+            <details class="think-drawer" ${msg.isStreaming ? 'open' : ''}>
+              <summary>
+                <span class="think-dot"></span>
+                <span>Thinking Process</span>
+                <svg class="think-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+              </summary>
+              <div class="think-body">${escapeHtml(msg.reasoning)}</div>
+            </details>
+          `;
+        }
+
+        let searchHtml = '';
+        if (msg.searchSources && msg.searchSources.length > 0) {
+          searchHtml = '<div class="search-sources-wrap" style="margin-bottom:12px; display:flex; flex-wrap:wrap;">' +
+            msg.searchSources.map(s => `<a href="${s.url}" target="_blank" class="search-pill-source">🌐 ${escapeHtml(s.title)}</a>`).join('') +
+            '</div>';
+        }
+
+        let typingIndicator = '';
+        if (msg.isStreaming && !msg.content && !msg.reasoning) {
+          typingIndicator = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+        }
+
+        const proseHtml = renderMarkdownWithMath(msg.content);
+
+        el.innerHTML = `
+          <div class="msg-content">
+            ${thinkHtml}
+            ${searchHtml}
+            ${typingIndicator}
+            <div class="prose">${proseHtml}</div>
+            ${!msg.isStreaming ? `
+              <div class="msg-actions">
+                <button class="msg-action-btn" onclick="copyMessageText(this)" data-tip="Copy">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                </button>
+                <button class="msg-action-btn" onclick="this.classList.toggle('active')" data-tip="Good response">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+                </button>
+                <button class="msg-action-btn" onclick="this.classList.toggle('active')" data-tip="Bad response">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path></svg>
+                </button>
+                <button class="msg-action-btn" onclick="regenerateLast()" data-tip="Regenerate">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                </button>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }
+      return el;
+    }
+
+    // Direct in-place streaming DOM updates (zero full DOM re-renders = zero flicker)
+    function updateStreamingAssistant(assistantEl, msg) {
+      if (!assistantEl) return;
+      const contentDiv = assistantEl.querySelector('.msg-content');
+      if (!contentDiv) return;
+
+      // 1. Remove typing dots once tokens arrive
+      const dots = contentDiv.querySelector('.typing-dots');
+      if (dots && (msg.reasoning || msg.content)) {
+        dots.remove();
+      }
+
+      // 2. Reasoning Think Drawer
+      if (msg.reasoning) {
+        let thinkDrawer = contentDiv.querySelector('.think-drawer');
+        if (!thinkDrawer) {
+          thinkDrawer = document.createElement('details');
+          thinkDrawer.className = 'think-drawer';
+          thinkDrawer.open = true;
+          thinkDrawer.innerHTML = `
+            <summary>
+              <span class="think-dot"></span>
+              <span>Thinking Process</span>
+              <svg class="think-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <div class="think-body"></div>
+          `;
+          contentDiv.insertBefore(thinkDrawer, contentDiv.firstChild);
+        }
+        const thinkBody = thinkDrawer.querySelector('.think-body');
+        if (thinkBody && thinkBody.textContent !== msg.reasoning) {
+          thinkBody.textContent = msg.reasoning;
+        }
+      }
+
+      // 3. Search Sources
+      if (msg.searchSources && msg.searchSources.length > 0 && !contentDiv.querySelector('.search-sources-wrap')) {
+        const searchWrap = document.createElement('div');
+        searchWrap.className = 'search-sources-wrap';
+        searchWrap.style.cssText = 'margin-bottom:12px; display:flex; flex-wrap:wrap;';
+        searchWrap.innerHTML = msg.searchSources.map(s => 
+          `<a href="${s.url}" target="_blank" class="search-pill-source">🌐 ${escapeHtml(s.title)}</a>`
+        ).join('');
+        const proseDiv = contentDiv.querySelector('.prose');
+        if (proseDiv) {
+          contentDiv.insertBefore(searchWrap, proseDiv);
+        } else {
+          contentDiv.appendChild(searchWrap);
+        }
+      }
+
+      // 4. Main Prose Markdown
+      let proseDiv = contentDiv.querySelector('.prose');
+      if (!proseDiv) {
+        proseDiv = document.createElement('div');
+        proseDiv.className = 'prose';
+        contentDiv.appendChild(proseDiv);
+      }
+      if (msg.content) {
+        proseDiv.innerHTML = renderMarkdownWithMath(msg.content);
+      }
+    }
+
+    function finalizeAssistantMessage(assistantEl, msg) {
+      if (!assistantEl) return;
+      msg.isStreaming = false;
+      assistantEl.classList.remove('streaming');
+
+      const contentDiv = assistantEl.querySelector('.msg-content');
+      if (!contentDiv) return;
+
+      const dots = contentDiv.querySelector('.typing-dots');
+      if (dots) dots.remove();
+
+      let proseDiv = contentDiv.querySelector('.prose');
+      if (proseDiv && msg.content) {
+        proseDiv.innerHTML = renderMarkdownWithMath(msg.content);
+      }
+
+      if (!contentDiv.querySelector('.msg-actions')) {
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'msg-actions';
+        actionsDiv.innerHTML = `
+          <button class="msg-action-btn" onclick="copyMessageText(this)" data-tip="Copy">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          </button>
+          <button class="msg-action-btn" onclick="this.classList.toggle('active')" data-tip="Good response">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+          </button>
+          <button class="msg-action-btn" onclick="this.classList.toggle('active')" data-tip="Bad response">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path></svg>
+          </button>
+          <button class="msg-action-btn" onclick="regenerateLast()" data-tip="Regenerate">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          </button>
+        `;
+        contentDiv.appendChild(actionsDiv);
+      }
+    }
+
+    // Markdown & KaTeX Parsing
+    function renderMarkdownWithMath(text) {
+      if (!text) return '';
+
+      // Replace display math $$...$$
+      let formatted = text.replace(/\$\$([\s\S]+?)\$\$/g, (m, math) => {
+        try {
+          return `<div class="katex-display">${katex.renderToString(math.trim(), { displayMode: true, throwOnError: false })}</div>`;
+        } catch (e) {
+          return m;
+        }
+      });
+
+      // Replace inline math $...$
+      formatted = formatted.replace(/\$([^\$\n]+?)\$/g, (m, math) => {
+        try {
+          return katex.renderToString(math.trim(), { displayMode: false, throwOnError: false });
+        } catch (e) {
+          return m;
+        }
+      });
+
+      // Render marked HTML
+      return marked.parse(formatted);
+    }
+
+    // Real-Time Wikipedia Search Integration
+    async function searchWikipedia(query) {
+      try {
+        const cleanQuery = query.replace(/[^\w\s]/gi, ' ').trim().slice(0, 100);
+        if (cleanQuery.length < 3) return [];
+        const searchUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(cleanQuery)}&format=json&origin=*&utf8=1&srlimit=2`;
+        const res = await fetch(searchUrl);
+        if (!res.ok) return [];
+        const data = await res.json();
+        const items = (data.query && data.query.search) || [];
+        if (items.length === 0) return [];
+
+        const titles = items.map(i => encodeURIComponent(i.title)).join('|');
+        const extractUrl = `https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro=1&explaintext=1&titles=${titles}&format=json&origin=*`;
+        const exRes = await fetch(extractUrl);
+        if (!exRes.ok) return [];
+        const exData = await exRes.json();
+        const pages = (exData.query && exData.query.pages) || {};
+
+        const results = [];
+        for (const pid of Object.keys(pages)) {
+          const p = pages[pid];
+          if (p.title && p.extract && p.extract.length > 30) {
+            results.push({
+              title: p.title,
+              body: p.extract.slice(0, 600).trim(),
+              url: `https://en.wikipedia.org/wiki/${encodeURIComponent(p.title)}`
+            });
+          }
+        }
+        return results;
+      } catch (e) {
+        console.warn('Search notice:', e);
+        return [];
+      }
+    }
+
+    // Send Message & Stream Response from Hugging Face GPU Router
+    async function sendMessage() {
+      const textarea = document.getElementById('composerTextarea');
+      const text = textarea.value.trim();
+      const attachment = pendingAttachment;
+
+      if (!text && !attachment) return;
+      if (isGenerating) return;
+
+      let activeChat = chats.find(c => c.id === currentChatId);
+      if (!activeChat) {
+        activeChat = {
+          id: 'chat_' + Date.now(),
+          title: text.slice(0, 32) + (text.length > 32 ? '…' : ''),
+          created_at: Date.now(),
+          messages: []
+        };
+        chats.unshift(activeChat);
+        currentChatId = activeChat.id;
+      }
+
+      // Switch view from empty to active chat stream
+      const emptyState = document.getElementById('emptyState');
+      const messagesCol = document.getElementById('messagesCol');
+      const composerArea = document.getElementById('composerArea');
+      if (emptyState) emptyState.style.display = 'none';
+      if (messagesCol) messagesCol.style.display = 'flex';
+      if (composerArea) composerArea.style.display = 'block';
+
+      // 1. Add User Message
+      const userMsg = {
+        role: 'user',
+        content: text,
+        image: attachment ? attachment.b64 : null,
+        timestamp: Date.now()
+      };
+      activeChat.messages.push(userMsg);
+
+      if (activeChat.messages.length === 1) {
+        activeChat.title = text.slice(0, 32) + (text.length > 32 ? '…' : '');
+      }
+
+      // Clear Composer Input
+      textarea.value = '';
+      textarea.style.height = 'auto';
+      clearAttachment();
+      document.getElementById('composerSendBtn').disabled = true;
+
+      // 2. Add Assistant Streaming Placeholder
+      const assistantMsg = {
+        role: 'assistant',
+        content: '',
+        reasoning: '',
+        searchSources: [],
+        isStreaming: true,
+        timestamp: Date.now()
+      };
+      activeChat.messages.push(assistantMsg);
+
+      saveChats();
+      renderMessages(activeChat.messages);
+
+      // Cache reference to the assistant message element in the DOM
+      const messagesColEl = document.getElementById('messagesCol');
+      const assistantEl = messagesColEl ? messagesColEl.lastElementChild : null;
+      if (assistantEl) assistantEl.classList.add('streaming');
+
+      // 3. Prepare Prompt & Web Research
+      let searchSources = [];
+      let searchContext = "";
+      const isGreetingOrShort = /^(hi|hello|hey|greetings|hola|good\s+(morning|afternoon|evening)|howdy|sup|ok|okay|thanks|thank you|yes|no|[a-z]{1,3})$/i.test(text.trim());
+      if (webSearchActive && text.trim().length >= 4 && !isGreetingOrShort) {
+        searchSources = await searchWikipedia(text);
+        if (searchSources.length > 0) {
+          assistantMsg.searchSources = searchSources;
+          searchContext = searchSources.map(s => `• [${s.title}]: ${s.body}`).join('\n\n');
+          updateStreamingAssistant(assistantEl, assistantMsg);
+        }
+      }
+
+      // 4. Instant 0.01s Identity Check
+      const lower = text.toLowerCase();
+      const identityTriggers = [
+        'what is your name', "what's your name", 'who are you', 'what are you called',
+        'tell me your name', 'your name', 'who created you', 'who made you',
+        'what model are you', 'what is nlrc', 'are you deepseek', 'are you qwen'
+      ];
+
+      if (identityTriggers.some(t => lower.includes(t))) {
+        assistantMsg.reasoning = 
+          "Step 1: Analyzed inquiry regarding system identity, architecture, and capabilities.\n" +
+          "Step 2: Retrieved core identity definition: NLRC AI (Neural Logic & Reasoning Core).\n" +
+          "Step 3: Confirmed neural architecture: Custom Group Relative Policy Optimization (GRPO) reinforcement learning engine.\n" +
+          "Step 4: Formulated comprehensive multi-section executive guide detailing identity and features.";
+        
+        assistantMsg.content = 
+          "# 🤖 Welcome to NLRC AI (Neural Logic & Reasoning Core)\n\n" +
+          "I am **NLRC AI**, an advanced frontier-grade reasoning intelligence created with custom **GRPO (Group Relative Policy Optimization)** neural architecture.\n\n" +
+          "---\n\n" +
+          "### 🌟 Core Architectural Capabilities\n\n" +
+          "1. **🧠 Genuine Neural Chain-of-Thought (`<think>` Reasoning)**:\n" +
+          "   - Decomposes every query into formal logical steps before answering.\n" +
+          "   - Transparent reasoning tokens rendered directly in your inspection drawer.\n\n" +
+          "2. **🌐 Real-Time Web Research & Factual Synthesis**:\n" +
+          "   - Dynamically pulls encyclopedic sources into active inference context.\n\n" +
+          "3. **⚡ High-Throughput Serverless GPU Execution**:\n" +
+          "   - Powered by dedicated NVIDIA GPU acceleration clusters for high tokens-per-second throughput.";
+        
+        assistantMsg.isStreaming = false;
+        saveChats();
+        finalizeAssistantMessage(assistantEl, assistantMsg);
+        scrollToBottom(true);
+        return;
+      }
+
+      // 5. Query Hugging Face GPU Cluster Router with Fallback
+      isGenerating = true;
+      toggleGeneratingUI(true);
+      abortController = new AbortController();
+
+      let userPrompt = text;
+      if (searchContext) {
+        userPrompt = `[Live Verified Web Research]:\n${searchContext}\n\nUser Question: ${userPrompt}`;
+      }
+
+      const messagesPayload = [
+        { role: 'system', content: SYSTEM_INSTRUCTION }
+      ];
+
+      // Include previous conversation history with authentic multimodal vision support
+      activeChat.messages.slice(-6, -1).forEach(m => {
+        if (m.image) {
+          messagesPayload.push({
+            role: m.role,
+            content: [
+              { type: 'text', text: m.content || 'Please analyze this uploaded image in detail.' },
+              { type: 'image_url', image_url: { url: m.image } }
+            ]
+          });
+        } else {
+          messagesPayload.push({
+            role: m.role,
+            content: m.content
+          });
+        }
+      });
+
+      // Dual endpoint pipeline: Vercel serverless /api/chat (preferred) -> direct HF fallback
+      const endpointsToTry = [
+        { isLocalApi: true, url: '/api/chat' },
+        ...HF_ENDPOINTS
+      ];
+
+      let streamRaf = null;
+      function scheduleUpdate() {
+        if (streamRaf) return;
+        streamRaf = requestAnimationFrame(() => {
+          streamRaf = null;
+          updateStreamingAssistant(assistantEl, assistantMsg);
+          scrollToBottom();
+        });
+      }
+
+      for (const ep of endpointsToTry) {
+        if (!isGenerating) break;
+
+        try {
+          const headers = { 'Content-Type': 'application/json' };
+          if (!ep.isLocalApi) {
+            headers['Authorization'] = `Bearer ${_t}`;
+          }
+
+          const response = await fetch(ep.url, {
+            method: 'POST',
+            headers,
+            signal: abortController.signal,
+            body: JSON.stringify({
+              model: ep.model || (attachment ? 'Qwen/Qwen3-VL-30B-A3B-Instruct' : 'Qwen/Qwen2.5-Coder-7B-Instruct'),
+              messages: messagesPayload,
+              max_tokens: 1800,
+              stream: true,
+              webSearch: webSearchActive
+            })
+          });
+
+          if (!response.ok) continue;
+
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          let buffer = '';
+          let fullText = '';
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop() || '';
+
+            for (const line of lines) {
+              const trimmed = line.trim();
+              if (!trimmed || trimmed === 'data: [DONE]') continue;
+              if (trimmed.startsWith('data: ')) {
+                try {
+                  const parsed = JSON.parse(trimmed.slice(6));
+                  const delta = parsed.choices?.[0]?.delta;
+                  const token = delta?.content || delta?.reasoning || '';
+                  if (token) {
+                    fullText += token;
+
+                    // Parse <think>...</think> in real time
+                    if (fullText.toLowerCase().includes('</think>')) {
+                      const idx = fullText.toLowerCase().indexOf('</think>');
+                      assistantMsg.reasoning = fullText.slice(0, idx).replace(/<think>/gi, '').trim();
+                      assistantMsg.content = fullText.slice(idx + 8).trim();
+                    } else if (fullText.toLowerCase().startsWith('<think>')) {
+                      assistantMsg.reasoning = fullText.replace(/<think>/gi, '').trim();
+                    } else {
+                      assistantMsg.content = fullText;
+                    }
+
+                    scheduleUpdate();
+                  }
+                } catch (e) {}
+              }
+            }
+          }
+
+          if (streamRaf) {
+            cancelAnimationFrame(streamRaf);
+            streamRaf = null;
+          }
+          updateStreamingAssistant(assistantEl, assistantMsg);
+          finalizeAssistantMessage(assistantEl, assistantMsg);
+          scrollToBottom();
+
+          success = true;
+          break;
+        } catch (err) {
+          if (err.name === 'AbortError') break;
+          console.warn(`Endpoint ${ep.url} fallback:`, err);
+        }
+      }
+
+      if (streamRaf) {
+        cancelAnimationFrame(streamRaf);
+        streamRaf = null;
+      }
+
+      if (!success && isGenerating) {
+        assistantMsg.content = "⚠️ Unable to establish connection with Hugging Face Serverless GPU. Please verify your internet connection and try again.";
+        updateStreamingAssistant(assistantEl, assistantMsg);
+      }
+
+      assistantMsg.isStreaming = false;
+      isGenerating = false;
+      toggleGeneratingUI(false);
+      finalizeAssistantMessage(assistantEl, assistantMsg);
+      saveChats();
+    }
+
+    function stopGeneration() {
+      if (abortController) abortController.abort();
+      isGenerating = false;
+      toggleGeneratingUI(false);
+      const activeChat = chats.find(c => c.id === currentChatId);
+      if (activeChat && activeChat.messages.length > 0) {
+        const lastMsg = activeChat.messages[activeChat.messages.length - 1];
+        if (lastMsg && lastMsg.role === 'assistant') {
+          lastMsg.isStreaming = false;
+          const col = document.getElementById('messagesCol');
+          if (col) finalizeAssistantMessage(col.lastElementChild, lastMsg);
+        }
+      }
+      saveChats();
+    }
+
+    function toggleGeneratingUI(generating) {
+      document.getElementById('composerSendBtn').style.display = generating ? 'none' : 'flex';
+      document.getElementById('composerStopBtn').style.display = generating ? 'flex' : 'none';
+    }
+
+    function regenerateLast() {
+      const activeChat = chats.find(c => c.id === currentChatId);
+      if (!activeChat || activeChat.messages.length === 0) return;
+      if (activeChat.messages[activeChat.messages.length - 1].role === 'assistant') {
+        activeChat.messages.pop();
+      }
+      const lastUserMsg = activeChat.messages[activeChat.messages.length - 1];
+      if (!lastUserMsg || lastUserMsg.role !== 'user') return;
+
+      const textarea = document.getElementById('composerTextarea');
+      if (textarea) textarea.value = lastUserMsg.content;
+      activeChat.messages.pop();
+      sendMessage();
+    }
+
+    function copyMessageText(btn) {
+      const text = btn.closest('.msg-content').querySelector('.prose').innerText;
+      navigator.clipboard.writeText(text);
+      btn.style.color = '#34c759';
+      setTimeout(() => { btn.style.color = ''; }, 1500);
+    }
+
+    function autoResizeTextarea(el) {
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 160) + 'px';
+      document.getElementById('composerSendBtn').disabled = !el.value.trim() && !pendingAttachment;
+    }
+
+    function handleTextareaKeyDown(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    }
+
+    function toggleWebSearch() {
+      webSearchActive = !webSearchActive;
+      const btns = [document.getElementById('webSearchToggle'), document.getElementById('emptyWebSearchToggle')];
+      btns.forEach(btn => {
+        if (!btn) return;
+        if (webSearchActive) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+    }
+
+    function handleFileSelect(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        pendingAttachment = {
+          name: file.name,
+          b64: evt.target.result,
+          type: file.type
+        };
+
+        const strip = document.getElementById('attachStrip');
+        strip.style.display = 'flex';
+        strip.innerHTML = `
+          <div class="ox-chip">
+            <img src="${evt.target.result}" alt="preview">
+            <button onclick="clearAttachment()" title="Remove">✕</button>
+          </div>
+        `;
+        document.getElementById('composerSendBtn').disabled = false;
+        const emptySendBtn = document.getElementById('emptySendBtn');
+        if (emptySendBtn) emptySendBtn.disabled = false;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearAttachment() {
+      pendingAttachment = null;
+      const f1 = document.getElementById('fileUploadInput');
+      const f2 = document.getElementById('emptyFileUploadInput');
+      if (f1) f1.value = '';
+      if (f2) f2.value = '';
+      const strip = document.getElementById('attachStrip');
+      if (strip) {
+        strip.style.display = 'none';
+        strip.innerHTML = '';
+      }
+      const textarea = document.getElementById('composerTextarea');
+      if (textarea) {
+        document.getElementById('composerSendBtn').disabled = !textarea.value.trim();
+      }
+      const emptyTa = document.getElementById('emptyComposerTextarea');
+      if (emptyTa) {
+        const eBtn = document.getElementById('emptySendBtn');
+        if (eBtn) eBtn.disabled = !emptyTa.value.trim();
+      }
+    }
+
+    function scrollToBottom(force = false) {
+      const wrap = document.getElementById('messagesWrap');
+      if (!wrap) return;
+      const isNearBottom = wrap.scrollHeight - wrap.scrollTop - wrap.clientHeight < 150;
+      if (force || isNearBottom) {
+        wrap.scrollTop = wrap.scrollHeight;
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Sidebar & UI Toggles
+    function toggleSidebar(open) {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      if (open) {
+        sidebar.classList.add('open');
+        overlay.classList.add('open');
+      } else {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('open');
+      }
+    }
+
+    function toggleSidebarCollapse() {
+      document.getElementById('sidebar').classList.toggle('collapsed');
+    }
+
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      document.getElementById('themeDarkBtn').classList.toggle('active', theme === 'dark');
+      document.getElementById('themeLightBtn').classList.toggle('active', theme === 'light');
+      localStorage.setItem('nlrc_theme', theme);
+    }
+
+    function openSettingsModal() {
+      document.getElementById('settingsOverlay').classList.add('open');
+    }
+
+    function closeSettingsModal() {
+      document.getElementById('settingsOverlay').classList.remove('open');
+    }
+
+    // Authentication Modal
+    let currentAuthMode = 'signin';
+
+    function openAuthModal() {
+      document.getElementById('authOverlay').classList.add('open');
+    }
+
+    function closeAuthModal() {
+      document.getElementById('authOverlay').classList.remove('open');
+    }
+
+    function switchAuthTab(mode) {
+      currentAuthMode = mode;
+      const tabSignIn = document.getElementById('tabSignIn');
+      const tabSignUp = document.getElementById('tabSignUp');
+      const nameGroup = document.getElementById('nameGroup');
+      const submitBtn = document.getElementById('authSubmitBtn');
+      const title = document.getElementById('authModalTitle');
+
+      if (mode === 'signup') {
+        tabSignUp.classList.add('active');
+        tabSignIn.classList.remove('active');
+        nameGroup.style.display = 'flex';
+        submitBtn.textContent = 'Create Account';
+        title.textContent = 'Create your NLRC Account';
+      } else {
+        tabSignIn.classList.add('active');
+        tabSignUp.classList.remove('active');
+        nameGroup.style.display = 'none';
+        submitBtn.textContent = 'Sign In';
+        title.textContent = 'Welcome back to NLRC AI';
+      }
+    }
+
+    function handleAuthSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('authEmail').value.trim();
+      const name = document.getElementById('authName').value.trim() || email.split('@')[0];
+
+      const user = {
+        name: name,
+        email: email,
+        isLoggedIn: true,
+        tier: 'NLRC Pro Member',
+        token: 'nlrc_usr_' + Math.random().toString(36).substring(2, 10)
+      };
+
+      localStorage.setItem('nlrc_user', JSON.stringify(user));
+      updateAuthUI();
+      closeAuthModal();
+    }
+
+    function continueAsGuest() {
+      const guest = {
+        name: 'Guest User',
+        email: 'guest@nlrc.ai',
+        isLoggedIn: false,
+        tier: 'Guest Access',
+        token: 'nlrc_guest'
+      };
+      localStorage.setItem('nlrc_user', JSON.stringify(guest));
+      updateAuthUI();
+      closeAuthModal();
+    }
+
+    function updateAuthUI() {
+      const userStr = localStorage.getItem('nlrc_user');
+      if (userStr) {
+        try {
+          const user = JSON.parse(userStr);
+          const modalName = document.getElementById('modalUserName');
+          const modalTier = document.getElementById('modalUserTier');
+          const modalAvatar = document.getElementById('modalAvatar');
+          const modalAuthBtn = document.getElementById('modalAuthBtn');
+          if (modalName) modalName.textContent = user.name;
+          if (modalTier) modalTier.textContent = user.tier;
+          if (modalAvatar) modalAvatar.textContent = (user.name[0] || 'U').toUpperCase();
+          if (modalAuthBtn) modalAuthBtn.textContent = user.isLoggedIn ? 'Sign Out' : 'Sign In';
+        } catch (e) {}
+      }
+    }
+
+    // Initialization
+    window.addEventListener('DOMContentLoaded', () => {
+      // 1. Theme
+      const savedTheme = localStorage.getItem('nlrc_theme') || 'dark';
+      setTheme(savedTheme);
+
+      // 2. Auth state
+      updateAuthUI();
+
+      // 3. Load chats
+      loadSavedChats();
+
+      // 4. Handle query parameters (e.g. from Landing page ?q=...)
+      const urlParams = new URLSearchParams(window.location.search);
+      const queryPrompt = urlParams.get('q');
+      if (queryPrompt) {
+        createNewChat();
+        const emptyTa = document.getElementById('emptyComposerTextarea');
+        if (emptyTa) emptyTa.value = queryPrompt;
+        sendFromEmpty();
+      } else if (chats.length > 0 && chats[0].messages && chats[0].messages.length > 0) {
+        selectChat(chats[0].id);
+      } else {
+        createNewChat();
+      }
+    });
+  </script>
+</body>
+</html>

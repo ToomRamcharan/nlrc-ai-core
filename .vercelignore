@@ -1,0 +1,11 @@
+*.py
+*.ipynb
+*.pyc
+__pycache__/
+.git/
+tools/
+src/
+*.txt
+*.md
+LICENSE
+requirements.txt

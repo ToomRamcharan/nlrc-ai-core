@@ -1,0 +1,7 @@
+{
+  "name": "nlrc-ai",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "NLRC AI — Frontier Neural Logic & Multimodal Reasoning Platform"
+}

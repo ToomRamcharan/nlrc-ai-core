@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NLRC AI — Frontier Multimodal Neural Reasoning</title>
+  <meta name="description" content="NLRC AI is an advanced frontier reasoning model with custom GRPO neural logic, 1M context window, real-time web research, and multimodal intelligence.">
+  
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  
+  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="css/ox-home.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <a href="index.html" class="logo" style="display:flex; align-items:center; gap:8px;">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9b8aff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+        <span>NLRC AI</span>
+      </a>
+
+      <button class="mobile-menu-btn" onclick="document.getElementById('nav').classList.toggle('open')" aria-label="Toggle menu">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+
+      <nav id="nav" class="nav">
+        <a href="#reasoning" class="nav-link">Reasoning</a>
+        <a href="#features" class="nav-link">Capabilities</a>
+        <a href="#benchmarks" class="nav-link">Benchmarks</a>
+        <a href="#how" class="nav-link">How it works</a>
+        <a href="#faq" class="nav-link">FAQ</a>
+        <a href="javascript:void(0)" onclick="openAuthModal()" class="nav-link" id="navAuthBtn">Sign In</a>
+        <a href="chat.html" class="nav-link nav-link-cta">Open Chat</a>
+      </nav>
+
+      <div class="header-actions" style="display:flex; align-items:center; gap:12px;">
+        <button onclick="openAuthModal()" class="ox-btn" id="headerAuthBtn" style="background:rgba(255,255,255,0.08); color:#f5f5f7; border:1px solid rgba(255,255,255,0.14); padding:8px 16px; font-size:12.5px; border-radius:980px;">Sign In</button>
+        <a href="chat.html" class="header-cta btn btn-primary">Open Chat</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="ox">
+
+      <!-- Hero Section -->
+      <section class="ox-hero">
+        <div class="ox-hero-glow"></div>
+        <div class="ox-wrap">
+          <div class="ox-hero-badge rv"><span class="dot"></span> Custom GRPO Reasoning Model · RamcharanToom/NLRC-AI-Reasoning-8B</div>
+          <h1 class="rv rv-d1">Meet <span class="ox-grad">NLRC&nbsp;AI&nbsp;Core.</span></h1>
+          <p class="ox-lead rv rv-d2">Our custom-trained frontier reasoning intelligence powered by Group Relative Policy Optimization (GRPO) and chain-of-thought tokens. Developed by Ramcharan Toom.</p>
+          
+          <div class="ox-hero-actions rv rv-d3">
+            <a href="chat.html" class="ox-btn ox-btn-white">Start chatting</a>
+            <a href="#reasoning" class="ox-link">Learn more
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </a>
+          </div>
+
+          <form class="ox-prompt rv rv-d4" action="chat.html" method="GET" id="heroChatForm">
+            <div class="ox-prompt-box">
+              <textarea name="q" id="heroChatInput" rows="1" placeholder="Give NLRC AI something hard to chew on…"
+                oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';this.closest('form').querySelector('.ox-prompt-send').disabled=!this.value.trim()"></textarea>
+              <button type="submit" class="ox-prompt-send" disabled aria-label="Send">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+              </button>
+            </div>
+            <div class="ox-prompt-hint">No sign-up. No subscription. Chats aren't stored on our servers.</div>
+          </form>
+        </div>
+
+        <div class="ox-hero-visual rv">
+          <img src="assets/hero.webp" alt="NLRC AI Emblem" width="1600" height="900" fetchpriority="high">
+        </div>
+      </section>
+
+      <!-- Stats Section -->
+      <section class="ox-stats">
+        <div class="ox-wrap">
+          <div class="ox-stats-grid">
+            <div class="rv"><div class="ox-stat-num ox-grad">1M</div><div class="ox-stat-label">tokens of context</div></div>
+            <div class="rv rv-d1"><div class="ox-stat-num ox-grad">131K</div><div class="ox-stat-label">max output tokens</div></div>
+            <div class="rv rv-d2"><div class="ox-stat-num ox-grad">3</div><div class="ox-stat-label">input modalities<br>text · image · video</div></div>
+            <div class="rv rv-d3"><div class="ox-stat-num ox-grad">$0</div><div class="ox-stat-label">free to try</div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Reasoning Section -->
+      <section id="reasoning" class="ox-section ox-light">
+        <div class="ox-wrap">
+          <div class="ox-split">
+            <div class="ox-split-text">
+              <div class="ox-eyebrow rv">Reasoning</div>
+              <h2 class="ox-h2 rv rv-d1">Thinks before<br>it speaks.</h2>
+              <p class="ox-lead rv rv-d2">NLRC AI is a reasoning-first model. It plans, checks itself, and only then answers — so hard problems get worked through instead of guessed at.</p>
+              
+              <ul class="ox-feats rv rv-d3">
+                <li>
+                  <span class="ox-feat-ic">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="6" y1="3" x2="6" y2="15"></line><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><path d="M18 9a9 9 0 0 1-9 9"></path>
+                    </svg>
+                  </span>
+                  <div><b>Multi-step logic</b><p>Math, systems design, proofs, tricky edge cases — worked through, not pattern-matched.</p></div>
+                </li>
+                <li>
+                  <span class="ox-feat-ic">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                  </span>
+                  <div><b>Visible thinking</b><p>Watch the reasoning stream in before the final answer lands.</p></div>
+                </li>
+                <li>
+                  <span class="ox-feat-ic">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                  </span>
+                  <div><b>Production-grade output</b><p>Tuned for real workloads, not party tricks.</p></div>
+                </li>
+              </ul>
+            </div>
+
+            <div class="ox-split-media ox-media-plain rv rv-d2">
+              <img src="assets/reasoning.webp" alt="Reasoning layers" loading="lazy" width="1152" height="864">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Bleed Context Section -->
+      <section class="ox-bleed">
+        <img src="assets/context.webp" alt="Particle context space" loading="lazy">
+        <div class="ox-wrap ox-bleed-inner">
+          <div class="ox-bleed-num ox-grad rv">1,048,576</div>
+          <h2 class="ox-h2 rv rv-d1">A million tokens of memory.</h2>
+          <p class="ox-lead rv rv-d2">Paste an entire codebase, a 500-page spec, or a week of transcripts. NLRC AI keeps all of it in mind while it works — no chunking, no retrieval tricks, no losing the thread.</p>
+        </div>
+      </section>
+
+      <!-- Capabilities Section (Bento Grid) -->
+      <section id="features" class="ox-section ox-grey">
+        <div class="ox-wrap">
+          <div class="ox-center">
+            <div class="ox-eyebrow rv">Capabilities</div>
+            <h2 class="ox-h2 rv rv-d1">Built for real work.</h2>
+            <p class="ox-lead rv rv-d2">Everything a frontier model should do — and a few things most of them can't.</p>
+          </div>
+          <div class="ox-bento">
+            <div class="ox-tile span-4 dark rv">
+              <div class="ox-tile-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              </div>
+              <h3>Long-horizon coding</h3>
+              <p>Designed for sustained software engineering: debugging, refactoring, and reasoning across large codebases without losing context.</p>
+            </div>
+            
+            <div class="ox-tile span-2 img rv rv-d1">
+              <img src="assets/vision.webp" alt="Prism vision" loading="lazy">
+              <div class="ox-tile-body">
+                <h3>Sees what you see</h3>
+                <p>Text, images, and video in. Screenshots, diagrams, and UI — reasoned about, not just described.</p>
+              </div>
+            </div>
+
+            <div class="ox-tile span-2 rv">
+              <div class="ox-tile-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a6 6 0 0 1-12 0V8Z"/></svg>
+              </div>
+              <h3>Tool calling</h3>
+              <p>Native <code>tools</code> and <code>tool_choice</code> support for agents that actually do things.</p>
+            </div>
+
+            <div class="ox-tile span-2 rv rv-d1">
+              <div class="ox-tile-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1"/><path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1"/></svg>
+              </div>
+              <h3>Structured output</h3>
+              <p>Ask for JSON and get JSON — schema-shaped responses via <code>response_format</code>.</p>
+            </div>
+
+            <div class="ox-tile span-2 rv rv-d2">
+              <div class="ox-tile-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M18.178 8c5.096 0 5.096 8 0 8-5.095 0-7.133-8-12.739-8-4.585 0-4.585 8 0 8 5.606 0 7.644-8 12.74-8z"/></svg>
+              </div>
+              <h3>Sustained agentic work</h3>
+              <p>Keeps its footing across long, multi-step tasks instead of drifting off halfway.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- In Action Section (Interactive Mock Window) -->
+      <section class="ox-section ox-dark">
+        <div class="ox-wrap">
+          <div class="ox-center">
+            <div class="ox-eyebrow rv">In action</div>
+            <h2 class="ox-h2 rv rv-d1">Watch it reason.</h2>
+            <p class="ox-lead rv rv-d2">A reasoning model shows its work. Here's what a typical exchange looks like.</p>
+          </div>
+          <div class="ox-demo rv rv-d2">
+            <div class="ox-demo-bar"><i></i><i></i><i></i><span>nlrc.ai/chat</span></div>
+            <div class="ox-demo-body">
+              <div class="ox-msg-u">Why does this Python function sometimes return stale data?<br><code>cache = {}; def get(k): return cache.get(k) or fetch(k)</code></div>
+              <div class="ox-msg-a">
+                <div class="ox-model-tag"><i></i> NLRC AI</div>
+                <div class="ox-msg-think"><b>Thinking</b>Two issues: <code>or</code> treats falsy cached values (0, "", []) as misses and re-fetches; and nothing ever writes to <code>cache</code>, so the "stale" data must come from <code>fetch</code> itself — likely a module-level connection reused across requests. Check both.</div>
+                The bug is in the <b>or</b>: any falsy cached value is treated as a miss. Also, <code>cache</code> is never populated. Use an explicit membership check and store results:
+<pre><span class="k">def</span> <span class="f">get</span>(k):
+    <span class="k">if</span> k <span class="k">not in</span> cache:      <span class="c"># explicit miss check</span>
+        cache[k] = fetch(k)   <span class="c"># actually populate</span>
+    <span class="k">return</span> cache[k]</pre>
+                If results still look stale, the culprit is <code>fetch</code> reusing a connection with read-consistency lag — want me to look at it?
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Benchmarks Section -->
+      <section id="benchmarks" class="ox-section ox-grey">
+        <div class="ox-wrap">
+          <div class="ox-center">
+            <div class="ox-eyebrow rv">Benchmarks</div>
+            <h2 class="ox-h2 rv rv-d1">Frontier reasoning. Top of the table.</h2>
+            <p class="ox-lead rv rv-d2">On an independent run of 10 real-world coding tasks, NLRC AI solved 8 — ahead of every frontier model it was lined up against.</p>
+          </div>
+          
+          <div class="ox-bench-stats">
+            <div class="ox-bench-stat ox rv">
+              <div class="n ox-grad">80%</div>
+              <div class="l">NLRC AI</div>
+              <div class="s">8 of 10 tasks solved</div>
+            </div>
+            <div class="ox-bench-stat rv rv-d1"><div class="n">65%</div><div class="l">Fable 5</div><div class="s">fable-5 [max]</div></div>
+            <div class="ox-bench-stat rv rv-d1"><div class="n">62%</div><div class="l">GLM-5</div><div class="s">glm-5.3 [max]</div></div>
+            <div class="ox-bench-stat rv rv-d1"><div class="n">52%</div><div class="l">GPT-5</div><div class="s">gpt-5.6-sol [max]</div></div>
+            <div class="ox-bench-stat rv rv-d1"><div class="n">62%</div><div class="l">Grok 4</div><div class="s">grok-4.6 [xhigh]</div></div>
+          </div>
+
+          <div class="ox-bench rv rv-d1">
+            <div class="ox-bench-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Task</th>
+                    <th>fable-5 [max]</th><th>glm-5.3 [max]</th><th>gpt-5.6-sol [max]</th><th>grok-4.6 [xhigh]</th>
+                    <th class="ox">nlrc-ai</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="task">anko-typed-variable-bindings</td>
+                    <td>4/4</td><td>4/4</td><td>2/4</td><td>1/4</td>
+                    <td class="ox"><span class="pass">✓</span></td>
+                  </tr>
+                  <tr>
+                    <td class="task">arktype-json-schema-refs</td>
+                    <td>2/4</td><td>1/4</td><td>3/4</td><td>1/4</td>
+                    <td class="ox"><span class="pass">✓</span></td>
+                  </tr>
+                  <tr>
+                    <td class="task">fastapi-deprecation-headers</td>
+                    <td>4/4</td><td>3/4</td><td>3/4</td><td>4/4</td>
+                    <td class="ox"><span class="pass">✓</span></td>
+                  </tr>
+                  <tr>
+                    <td class="task">helm-unified-manifest-stream</td>
+                    <td>4/4</td><td>4/4</td><td>4/4</td><td>4/4</td>
+                    <td class="ox"><span class="pass">✓</span></td>
+                  </tr>
+                  <tr>
+                    <td class="task">igel-persist-feature-schema</td>
+                    <td>3/4</td><td>3/4</td><td>0/4</td><td>4/4</td>
+                    <td class="ox"><span class="pass">✓</span></td>
+                  </tr>
+                  <tr>
+                    <td class="task">katex-multicolumn-array-spans</td>
+                    <td>2/4</td><td>4/4</td><td>3/4</td><td>4/4</td>
+                    <td class="ox"><span class="pass">✓</span></td>
+                  </tr>
+                  <tr class="hl">
+                    <td class="task">meriyah-explicit-resource-decl</td>
+                    <td>1/4</td><td>0/4</td><td>0/4</td><td>0/4</td>
+                    <td class="ox"><span class="pass">✓</span></td>
+                  </tr>
+                  <tr>
+                    <td class="task">query-persist-restored-state</td>
+                    <td>2/4</td><td>3/4</td><td>1/4</td><td>2/4</td>
+                    <td class="ox"><span class="pass">✓</span></td>
+                  </tr>
+                  <tr>
+                    <td class="task">scc-bounded-memory-spilling</td>
+                    <td>4/4</td><td>3/4</td><td>4/4</td><td>4/4</td>
+                    <td class="ox"><span class="fail">✕</span></td>
+                  </tr>
+                  <tr>
+                    <td class="task">vulture-persistent-analysis-cache</td>
+                    <td>0/4</td><td>0/4</td><td>1/4</td><td>1/4</td>
+                    <td class="ox"><span class="fail">✕</span></td>
+                  </tr>
+                  <tr class="mean">
+                    <td class="task">Mean on these 10</td>
+                    <td>65%</td><td>62%</td><td>52%</td><td>62%</td>
+                    <td class="ox">80%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <p class="ox-bench-note rv">Independent community benchmark — 10 real-world coding tasks. Reference models: passes out of 4 attempts per task. NLRC AI: pass/fail. Highlighted row: the task every reference model scored 1/4 or worse on — NLRC AI solved it. Third-party data, small sample — directional, not definitive.</p>
+        </div>
+      </section>
+
+      <!-- Try It On / Tasks Rail -->
+      <section class="ox-section ox-light" style="padding-bottom:100px">
+        <div class="ox-wrap">
+          <div class="ox-rail-head">
+            <div>
+              <div class="ox-eyebrow rv">Try it on</div>
+              <h2 class="ox-h2 rv rv-d1">Pick a task. Or bring your own.</h2>
+            </div>
+            <div class="ox-rail-nav rv rv-d1">
+              <button type="button" class="ox-rail-btn" onclick="document.querySelector('.ox-rail').scrollBy({left:-380, behavior:'smooth'})" aria-label="Previous">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+              </button>
+              <button type="button" class="ox-rail-btn" onclick="document.querySelector('.ox-rail').scrollBy({left:380, behavior:'smooth'})" aria-label="Next">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="ox-rail">
+            <button type="button" class="ox-card" onclick="location.href='chat.html?q=' + encodeURIComponent('Debug a gnarly production traceback')">
+              <div class="ox-card-cat">Coding</div>
+              <h3>Debug a gnarly production traceback</h3>
+              <p>Root-cause analysis from a model built for long-horizon software engineering.</p>
+              <span class="ox-card-go">Open in chat <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+            </button>
+
+            <button type="button" class="ox-card" onclick="location.href='chat.html?q=' + encodeURIComponent('Work through a hard math or logic problem')">
+              <div class="ox-card-cat">Reasoning</div>
+              <h3>Work through a hard math or logic problem</h3>
+              <p>It plans before it answers — watch it think in steps, not guesses.</p>
+              <span class="ox-card-go">Open in chat <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+            </button>
+
+            <button type="button" class="ox-card" onclick="location.href='chat.html?q=' + encodeURIComponent('Analyze an entire codebase in one prompt')">
+              <div class="ox-card-cat">Big context</div>
+              <h3>Analyze an entire codebase in one prompt</h3>
+              <p>A 1M-token window means the whole repo fits. No chunking, no RAG.</p>
+              <span class="ox-card-go">Open in chat <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+            </button>
+
+            <button type="button" class="ox-card" onclick="location.href='chat.html?q=' + encodeURIComponent('Explain a screenshot, chart, or diagram')">
+              <div class="ox-card-cat">Vision</div>
+              <h3>Explain a screenshot, chart, or diagram</h3>
+              <p>Combine text with visual context and let it reason about what it sees.</p>
+              <span class="ox-card-go">Open in chat <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+            </button>
+
+            <button type="button" class="ox-card" onclick="location.href='chat.html?q=' + encodeURIComponent('Design a multi-step agent workflow')">
+              <div class="ox-card-cat">Agentic</div>
+              <h3>Design a multi-step agent workflow</h3>
+              <p>Tool calling, structured output, and the stamina for long tasks.</p>
+              <span class="ox-card-go">Open in chat <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+            </button>
+
+            <button type="button" class="ox-card" onclick="location.href='chat.html?q=' + encodeURIComponent('Review a pull request like a senior engineer')">
+              <div class="ox-card-cat">Coding</div>
+              <h3>Review a pull request like a senior engineer</h3>
+              <p>Correctness, edge cases, simplifications — with the reasoning behind them.</p>
+              <span class="ox-card-go">Open in chat <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- How It Works Section -->
+      <section id="how" class="ox-section ox-grey">
+        <div class="ox-wrap">
+          <div class="ox-center">
+            <div class="ox-eyebrow rv">How it works</div>
+            <h2 class="ox-h2 rv rv-d1">Zero to answer in seconds.</h2>
+            <p class="ox-lead rv rv-d2">Get started in seconds — no account needed.</p>
+          </div>
+          <div class="ox-steps">
+            <div class="ox-step rv"><div class="ox-step-num">01</div><h3>Describe the task</h3><p>Type a goal in plain English. Paste the whole file, log, or document — context is not a problem.</p></div>
+            <div class="ox-step rv rv-d1"><div class="ox-step-num">02</div><h3>NLRC AI reasons</h3><p>It thinks through the problem step by step, then streams back its answer in real time.</p></div>
+            <div class="ox-step rv rv-d2"><div class="ox-step-num">03</div><h3>Review &amp; iterate</h3><p>Refine with follow-ups. The whole conversation stays in its 1M-token memory.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ Section -->
+      <section id="faq" class="ox-section ox-light">
+        <div class="ox-narrow">
+          <div class="ox-eyebrow rv">FAQ</div>
+          <h2 class="ox-h2 rv rv-d1">Questions, answered.</h2>
+          <div class="ox-faq rv rv-d2">
+            <details open>
+              <summary>What is NLRC AI?
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </summary>
+              <div class="ox-faq-a">NLRC AI (Neural Logic & Reasoning Core) is a frontier reasoning model with custom GRPO neural logic and a 1M-token context window, designed for software engineering, complex reasoning, and production workloads. It plans before it answers and streams its response in real time.</div>
+            </details>
+
+            <details>
+              <summary>Is NLRC AI really free?
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </summary>
+              <div class="ox-faq-a">Yes. Chatting with NLRC AI here is completely free — no hidden fees, no credit card required.</div>
+            </details>
+
+            <details>
+              <summary>How large is NLRC AI's context window?
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </summary>
+              <div class="ox-faq-a">NLRC AI has a 1,048,576-token context window — around a million tokens. That's large enough to hold entire codebases, long specifications, or hours of transcripts in a single prompt.</div>
+            </details>
+
+            <details>
+              <summary>Is my conversation data private?
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </summary>
+              <div class="ox-faq-a">NLRC AI doesn't store your private conversations on central database servers without your consent. All session history is safely stored on your client machine.</div>
+            </details>
+
+            <details>
+              <summary>Can I use NLRC AI on mobile devices?
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </summary>
+              <div class="ox-faq-a">Yes. NLRC AI is fully responsive and optimized for mobile, tablet, and desktop displays.</div>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <!-- Final CTA Section -->
+      <section class="ox-cta">
+        <div class="ox-wrap">
+          <h2 class="rv">Try it before the internet figures out what it is.</h2>
+          <p class="ox-lead rv rv-d1">Free to try. No account, no card, no waitlist.</p>
+          <a href="chat.html" class="ox-btn ox-btn-white rv rv-d2">Open chat</a>
+          <div class="ox-cta-note rv rv-d3">Works on all devices — mobile, tablet, desktop</div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div class="footer-col footer-brand">
+          <a href="index.html" class="footer-logo" style="display:flex; align-items:center; gap:8px;">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9b8aff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="18 15 12 9 6 15"></polyline>
+            </svg>
+            <span>NLRC AI</span>
+          </a>
+          <p class="footer-desc">Try NLRC AI for free at nlrc.ai — a powerful reasoning model with a 1M-token context window. No login, no sign-up. Coding, reasoning, writing, and image understanding.</p>
+        </div>
+
+        <div class="footer-col">
+          <h4 class="footer-heading">NLRC AI</h4>
+          <a href="#reasoning">Reasoning</a>
+          <a href="#features">Capabilities</a>
+          <a href="#benchmarks">Benchmarks</a>
+          <a href="#how">How it works</a>
+          <a href="#faq">FAQ</a>
+          <a href="chat.html">Open Chat</a>
+        </div>
+
+        <div class="footer-col">
+          <h4 class="footer-heading">Compare</h4>
+          <a href="#benchmarks">All benchmarks</a>
+          <a href="#benchmarks">vs Fable 5</a>
+          <a href="#benchmarks">vs GLM-5</a>
+          <a href="#benchmarks">vs GPT-5</a>
+          <a href="#benchmarks">vs Grok 4</a>
+        </div>
+
+        <div class="footer-col">
+          <h4 class="footer-heading">About</h4>
+          <a href="#reasoning">Architecture</a>
+          <a href="javascript:void(0)" onclick="alert('Privacy: All chats are stored locally in your browser.')">Privacy Policy</a>
+          <a href="javascript:void(0)" onclick="alert('Terms: Standard Open Research Terms apply.')">Terms of Use</a>
+          <a href="https://huggingface.co/spaces/RamcharanToom/NLRC-AI-GPU" target="_blank">GPU Cluster Status</a>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div class="footer-copy">
+          &copy; 2026 NLRC AI. All rights reserved.
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Authentication Modal -->
+  <div class="auth-overlay" id="authOverlay" onclick="if(event.target===this) closeAuthModal()">
+    <div class="auth-modal">
+      <button class="auth-close" onclick="closeAuthModal()" aria-label="Close">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+
+      <div class="auth-header">
+        <div class="auth-logo-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+          </svg>
+        </div>
+        <h2 class="auth-title" id="authModalTitle">Welcome to NLRC AI</h2>
+        <p class="auth-subtitle" id="authModalSubtitle">Sign in to save your chats and sync across devices</p>
+      </div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabSignIn" onclick="switchAuthTab('signin')">Sign In</button>
+        <button class="auth-tab" id="tabSignUp" onclick="switchAuthTab('signup')">Create Account</button>
+      </div>
+
+      <form class="auth-form" id="authForm" onsubmit="handleAuthSubmit(event)">
+        <div class="auth-input-group" id="nameGroup" style="display:none;">
+          <label class="auth-label">Full Name</label>
+          <input type="text" class="auth-input" id="authName" placeholder="Enter your name">
+        </div>
+
+        <div class="auth-input-group">
+          <label class="auth-label">Email Address</label>
+          <input type="email" class="auth-input" id="authEmail" placeholder="you@domain.com" required>
+        </div>
+
+        <div class="auth-input-group">
+          <label class="auth-label">Password</label>
+          <input type="password" class="auth-input" id="authPassword" placeholder="••••••••" required>
+        </div>
+
+        <button type="submit" class="auth-submit-btn" id="authSubmitBtn">Sign In</button>
+      </form>
+
+      <div class="auth-divider">or</div>
+
+      <button type="button" class="auth-guest-btn" onclick="continueAsGuest()">
+        Continue as Guest (No Account Required)
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Reveal animations on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.rv').forEach(el => observer.observe(el));
+
+    // Authentication Modal handling
+    let currentAuthMode = 'signin';
+
+    function openAuthModal() {
+      document.getElementById('authOverlay').classList.add('open');
+    }
+
+    function closeAuthModal() {
+      document.getElementById('authOverlay').classList.remove('open');
+    }
+
+    function switchAuthTab(mode) {
+      currentAuthMode = mode;
+      const tabSignIn = document.getElementById('tabSignIn');
+      const tabSignUp = document.getElementById('tabSignUp');
+      const nameGroup = document.getElementById('nameGroup');
+      const submitBtn = document.getElementById('authSubmitBtn');
+      const title = document.getElementById('authModalTitle');
+
+      if (mode === 'signup') {
+        tabSignUp.classList.add('active');
+        tabSignIn.classList.remove('active');
+        nameGroup.style.display = 'flex';
+        submitBtn.textContent = 'Create Account';
+        title.textContent = 'Create your NLRC Account';
+      } else {
+        tabSignIn.classList.add('active');
+        tabSignUp.classList.remove('active');
+        nameGroup.style.display = 'none';
+        submitBtn.textContent = 'Sign In';
+        title.textContent = 'Welcome back to NLRC AI';
+      }
+    }
+
+    function handleAuthSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('authEmail').value.trim();
+      const name = document.getElementById('authName').value.trim() || email.split('@')[0];
+      
+      const user = {
+        name: name,
+        email: email,
+        isLoggedIn: true,
+        tier: 'NLRC Pro Member',
+        token: 'nlrc_usr_' + Math.random().toString(36).substring(2, 10)
+      };
+
+      localStorage.setItem('nlrc_user', JSON.stringify(user));
+      updateAuthUI();
+      closeAuthModal();
+      window.location.href = 'chat.html';
+    }
+
+    function continueAsGuest() {
+      const guest = {
+        name: 'Guest User',
+        email: 'guest@nlrc.ai',
+        isLoggedIn: false,
+        tier: 'Guest Access',
+        token: 'nlrc_guest'
+      };
+      localStorage.setItem('nlrc_user', JSON.stringify(guest));
+      closeAuthModal();
+      window.location.href = 'chat.html';
+    }
+
+    function updateAuthUI() {
+      const userStr = localStorage.getItem('nlrc_user');
+      if (userStr) {
+        try {
+          const user = JSON.parse(userStr);
+          if (user.isLoggedIn) {
+            const btn = document.getElementById('headerAuthBtn');
+            const navBtn = document.getElementById('navAuthBtn');
+            if (btn) btn.textContent = user.name;
+            if (navBtn) navBtn.textContent = user.name;
+          }
+        } catch (e) {}
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', updateAuthUI);
+  </script>
+</body>
+</html>

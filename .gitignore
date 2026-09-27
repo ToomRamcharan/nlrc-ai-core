@@ -1,0 +1,28 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Nested reference repo
+reference_repo/
+
+# Model Weights and Checkpoints (Cloud-only)
+*.pt
+*.bin
+*.safetensors
+checkpoints/
+nlrc_ai_checkpoints/
+
+# Virtual Environments
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs
+*.log
+colab-mcp-logs*/
+
+.vercel
